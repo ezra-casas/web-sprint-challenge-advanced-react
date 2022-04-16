@@ -1,6 +1,12 @@
 import React from 'react'
 
 export default class AppClass extends React.Component {
+  state = { 
+    coordinate: {x: 2, y: 2}, 
+    steps: 0, 
+    email: "",
+    moveError: ""
+  }
   render() {
     const { className } = this.props
     return (
@@ -21,7 +27,7 @@ export default class AppClass extends React.Component {
           <div className="square"></div>
         </div>
         <div className="info">
-          <h3 id="message"></h3>
+          <h3 id="message">{}</h3>
         </div>
         <div id="keypad">
           <button id="left">LEFT</button>
