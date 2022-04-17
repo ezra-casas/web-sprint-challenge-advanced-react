@@ -9,17 +9,28 @@ export default function AppFunctional(props) {
   const [email, setEmail] = useState('');
 
   const moveUp = () => {
-    // coordinate.y > 1 ? (setY(prevsteps => prevsteps -1),setSteps(prevsteps => prevsteps + 1),setMoveError('')) : setMoveError("You can't go up")
-    (coordinate.y > 1) ? (setCoordinate({...coordinate, y: coordinate.y - 1}), setSteps(steps + 1), setMoveError('')) : setMoveError("You can't go up")
+    (coordinate.y > 1) ? 
+    (setCoordinate({...coordinate, y: coordinate.y - 1}), 
+    setSteps(steps + 1), setMoveError('')) 
+    : setMoveError("You can't go up")
   }
   const moveDown = () => {
-    coordinate.y < 3 ? (setCoordinate({...coordinate, y: coordinate.y + 1}), setSteps(steps + 1), setMoveError('')) : setMoveError("You can't go down"); 
+    coordinate.y < 3 ? 
+    (setCoordinate({...coordinate, y: coordinate.y + 1}), 
+    setSteps(steps + 1), setMoveError('')) 
+    : setMoveError("You can't go down"); 
   }
   const moveLeft = () => {
-    coordinate.x > 1 ? (setCoordinate({...coordinate, x: coordinate.x - 1}), setSteps(steps + 1), setMoveError('')) : setMoveError("You can't go left");
+    coordinate.x > 1 ? 
+    (setCoordinate({...coordinate, x: coordinate.x - 1}), 
+    setSteps(steps + 1), setMoveError('')) 
+    : setMoveError("You can't go left");
   }
   const moveRight = () => {
-    coordinate.x < 3 ? (setCoordinate({...coordinate, x: coordinate.x + 1}), setSteps(steps + 1), setMoveError('')) : setMoveError("You can't move right");
+    coordinate.x < 3 ? 
+    (setCoordinate({...coordinate, x: coordinate.x + 1}), 
+    setSteps(steps + 1), setMoveError(''))
+    : setMoveError("You can't move right");
   }
   const resetHandler = () => {
     setCoordinate({x: 2, y: 2});
