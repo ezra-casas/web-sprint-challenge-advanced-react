@@ -30,7 +30,7 @@ export default function AppFunctional(props) {
     coordinate.x < 3 ? 
     (setCoordinate({...coordinate, x: coordinate.x + 1}), 
     setSteps(steps + 1), setMoveError(''))
-    : setMoveError("You can't move right");
+    : setMoveError("You can't go right");
   }
   const resetHandler = () => {
     setCoordinate({x: 2, y: 2});
@@ -55,7 +55,7 @@ export default function AppFunctional(props) {
     axios.post('http://localhost:9000/api/result', newSubmission)
     .then(response => {
       setMoveError(response.data.message);
-      setEmail(email);
+      setEmail("");
     })
     .catch(error => setMoveError(error.response.data.message))
   }
@@ -110,7 +110,7 @@ export default function AppFunctional(props) {
           id="email"
           value={email}
           onChange={onChange}
-          type="email"
+          type="typeemail"
           placeholder='example@example.com'>
         </input>
         <input

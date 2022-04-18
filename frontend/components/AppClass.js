@@ -1,121 +1,257 @@
-import React from 'react';
-import axios from 'axios';
-const URL = "http://localhost:9000/api/result";
+import React from "react";
+import axios from "axios";
+
+const initialState = {
+  coordinate: { x: 2, y: 2 },
+  steps: 0,
+  email: "",
+  message: "",
+};
 
 export default class AppClass extends React.Component {
-  state = { 
-    coordinate: {x: 2, y: 2}, 
-    steps: 0, 
-    email: "",
-    moveError: ""
-  }
-  moveY = (key, value) => {
-    key === "up" && value > 1 ? this.setState({
-      ...this.state,
-      y: value - 1,
-      count: this.state.count + 1,
-      moveError: '',
-    })
-    : key === "up" && value === 1 ?
-    this.setState({
-      ...this.state,
-      moveError: "You can't go up",
-    })
-    : key === "down" && value < 3 ?
-    this.setState({
-      ...this.state,
-      y: value + 1,
-      count: this.state.count + 1,
-      moveError: '',
-    })
-    : this.setState({
-      ...this.state,
-      moveError: "You can't go down",
-    })
-  }
-  moveX = (key, value) => {
-    key === "left" && value > 1 ? this.setState({
-      ...this.state,
-      x: value - 1,
-      count: this.state.count + 1,
-      moveError: '',
-    })
-    : key === "left" && value === 1 ?
-    this.setState({
-      ...this.state,
-      moveError: "You can't go left",
-    })
-    : key === "right" && value < 3 ?
-    this.setState({
-      ...this.state,
-      x: value + 1,
-      count: this.state.count + 1,
-      moveError: '',
-    })
-    : this.setState({
-      ...this.state,
-      moveError: "You can't go right",
-    })
-  }
+  state = initialState;
 
-  resetHandler = () => {
-    this.setState({
-      ...this.state,
-      moveError: '',
-      email: '',
-      x: 2,
-      y: 2,
-      count: 0
-    })
-  }
+  onChange = (evt) => {
+    const { value } = evt.target;
+    this.setState({ ...this.state, email: value });
+  };
 
-  onChange = event => {
-    this.setState({email: event.target.value});
-  }
+  onSubmit = (evt) => {
+    evt.preventDefault();
+    const postPayload = {
+      x: this.state.coordinate.x,
+      y: this.state.coordinate.y,
+      steps: this.state.steps,
+      email: this.state.email,
+    };
+    axios
+      .post("http://localhost:9000/api/result", postPayload)
+      .then((res) => {
+        this.setState({ ...this.state, message: res.data.message, email: "" });
+      })
+      .catch((err) => {
+        this.setState({ ...this.setState, message: err.response.data.message });
+      });
+  };
 
-  postToAxios = event => {
-    event.preventDefault();
-    const newSubs = {
-      x: this.state.MoveX,
-      y: this.state.moveY,
-      
+  moveLeft = () => {
+    if (this.state.coordinate.x > 1) {
+      this.setState({
+        ...this.state,
+        steps: this.state.steps + 1,
+        coordinate: {
+          ...this.state.coordinate,
+          x: this.state.coordinate.x - 1,
+        },
+        message: "",
+      });
+    } else {
+      this.setState({ ...this.state, message: "You can't go left" });
     }
-  }
-  
+  };
+
+  moveRight = () => {
+    if (this.state.coordinate.x < 3) {
+      this.setState({
+        ...this.state,
+        steps: this.state.steps + 1,
+        coordinate: {
+          ...this.state.coordinate,
+          x: this.state.coordinate.x + 1,
+        },
+        message: "",
+      });
+    } else {
+      this.setState({ ...this.state, message: "You can't go right" });
+    }
+  };
+
+  moveUp = () => {
+    if (this.state.coordinate.y > 1) {
+      this.setState({
+        ...this.state,
+        steps: this.state.steps + 1,
+        coordinate: {
+          ...this.state.coordinate,
+          y: this.state.coordinate.y - 1,
+        },
+        message: "",
+      });
+    } else {
+      this.setState({ ...this.state, message: "You can't go up" });
+    }
+  };
+
+  moveDown = () => {
+    if (this.state.coordinate.y < 3) {
+      this.setState({
+        ...this.state,
+        steps: this.state.steps + 1,
+        coordinate: {
+          ...this.state.coordinate,
+          y: this.state.coordinate.y + 1,
+        },
+        message: "",
+      });
+    } else {
+      this.setState({ ...this.state, message: "You can't go down" });
+    }
+  };
+
+  moveReset = () => {
+    this.setState({
+      ...this.state,
+      coordinate: { x: 2, y: 2 },
+      steps: 0,
+      email: "",
+      message: "",
+    });
+  };
+
   render() {
-    const { className } = this.props
+    const { className } = this.props;
     return (
       <div id="wrapper" className={className}>
         <div className="info">
-          <h3 id="coordinates">Coordinates (2, 2)</h3>
-          <h3 id="steps">You moved 0 times</h3>
+          <h3 id="coordinates">{`Coordinates (${this.state.coordinate.x}, ${this.state.coordinate.y})`}</h3>
+          <h3 id="steps">
+            You moved {this.state.steps}{" "}
+            {this.state.steps === 1 ? "time" : "times"}
+          </h3>
         </div>
         <div id="grid">
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square active">B</div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
-          <div className="square"></div>
+          <div
+            className={`${
+              this.state.coordinate.x === 1 && this.state.coordinate.y === 1
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 1 && this.state.coordinate.y === 1
+              ? "B"
+              : ""}
+          </div>
+
+          <div
+            className={`${
+              this.state.coordinate.x === 2 && this.state.coordinate.y === 1
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 2 && this.state.coordinate.y === 1
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 3 && this.state.coordinate.y === 1
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 3 && this.state.coordinate.y === 1
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 1 && this.state.coordinate.y === 2
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 1 && this.state.coordinate.y === 2
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 2 && this.state.coordinate.y === 2
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 2 && this.state.coordinate.y === 2
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 3 && this.state.coordinate.y === 2
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 3 && this.state.coordinate.y === 2
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 1 && this.state.coordinate.y === 3
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 1 && this.state.coordinate.y === 3
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 2 && this.state.coordinate.y === 3
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 2 && this.state.coordinate.y === 3
+              ? "B"
+              : ""}
+          </div>
+          <div
+            className={`${
+              this.state.coordinate.x === 3 && this.state.coordinate.y === 3
+                ? "square active"
+                : "square"
+            }`}
+          >
+            {this.state.coordinate.x === 3 && this.state.coordinate.y === 3
+              ? "B"
+              : ""}
+          </div>
         </div>
         <div className="info">
-          <h3 id="message">{this.state.moveError}</h3>
+          <h3 id="message">{this.state.message}</h3>
         </div>
         <div id="keypad">
-          <button id="left">LEFT</button>
-          <button id="up">UP</button>
-          <button id="right">RIGHT</button>
-          <button id="down">DOWN</button>
-          <button id="reset">reset</button>
+          <button id="left" onClick={this.moveLeft}>
+            LEFT
+          </button>
+          <button id="up" onClick={this.moveUp}>
+            UP
+          </button>
+          <button id="right" onClick={this.moveRight}>
+            RIGHT
+          </button>
+          <button id="down" onClick={this.moveDown}>
+            DOWN
+          </button>
+          <button id="reset" onClick={this.moveReset}>
+            reset
+          </button>
         </div>
-        <form>
-          <input id="email" type="email" placeholder="type email"></input>
+        <form onSubmit={this.onSubmit}>
+          <input
+            id="email"
+            onChange={this.onChange}
+            value={this.state.email}
+            type="email"
+            placeholder="type email"
+          ></input>
           <input id="submit" type="submit"></input>
         </form>
       </div>
-    )
+    );
   }
 }
